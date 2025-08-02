@@ -1,0 +1,17 @@
+{
+    "name": "json-saver-service",
+    "version": "1.0.0",
+    "description": "A simple Node.js app with a POST endpoint that saves JSON to a file",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "engines": {
+        "node": ">=14"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "body-parser": "^1.20.2",
+        "morgan": "^1.10.0"
+    }
+}
