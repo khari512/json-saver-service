@@ -20,9 +20,46 @@ app.get('/', (req, res) => {
   res.send('OK');
 });
 
+// GET /Ensis_RFIDSCAN endpoint to fetch merged tags from all records
+app.get('/Ensis_RFIDSCAN', async (req, res) => {
+  try {
+    const content = await fs.readFile(DATA_FILE, 'utf8');
+    const arr = JSON.parse(content);
+
+    // Collect all tags from each entry's data.tags
+    let mergedTags = [];
+    arr.forEach(entry => {
+      if (entry.data && Array.isArray(entry.data.tags)) {
+        mergedTags = mergedTags.concat(entry.data.tags);
+      }
+    });
+
+    res.json({ tags: mergedTags });
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // File does not exist, return empty tags array
+      res.json({ tags: [] });
+    } else {
+      console.error('Error reading data:', err);
+      res.status(500).json({ error: 'Could not fetch tags.' });
+    }
+  }
+});
+
+// DELETE /Ensis_RFIDSCAN endpoint to clear all records
+app.delete('/Ensis_RFIDSCAN', async (req, res) => {
+  try {
+    await fs.writeFile(DATA_FILE, JSON.stringify([], null, 2));
+    console.log('Data file cleared');
+    res.json({ message: 'All records deleted.' });
+  } catch (err) {
+    console.error('Error clearing data:', err);
+    res.status(500).json({ error: 'Could not clear data.' });
+  }
+});
 
 // POST /data endpoint
-app.post('/data', async (req, res) => {
+app.post('/Ensis_RFIDSCAN', async (req, res) => {
   console.log(`[${new Date().toISOString()}] Incoming POST /data`, req.body);
   try {
     const incoming = req.body;
